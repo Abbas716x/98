@@ -1,0 +1,32 @@
+{
+  "name": "XQD716 NEXUS 6.0 | Ultra-Glass Enterprise",
+  "short_name": "XQD716",
+  "description": "نظام إدارة الصالات ومراكز الألعاب المتطور مع عزل الفروع التام، والمزامنة السحابية اللحظية، وتوثيق الديون والمدفوعات المبكرة",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050512",
+  "theme_color": "#050512",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='128' fill='%23050512'/><circle cx='256' cy='256' r='200' fill='none' stroke='%2300FFFF' stroke-width='24'/><text x='50%25' y='55%25' font-size='220' font-family='sans-serif' font-weight='900' fill='%23C026D3' text-anchor='middle' dominant-baseline='central'>X</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='128' fill='%23050512'/><circle cx='256' cy='256' r='200' fill='none' stroke='%2300FFFF' stroke-width='24'/><text x='50%25' y='55%25' font-size='220' font-family='sans-serif' font-weight='900' fill='%23C026D3' text-anchor='middle' dominant-baseline='central'>X</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "business",
+    "finance",
+    "utilities"
+  ]
+}
