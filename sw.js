@@ -1,8 +1,8 @@
 /* ==================================================================
-   XQD716 NEXUS 6.0 — Service Worker Engine (PWA Performance & Cache)
+   X00716 NEXUS ENTERPRISE — Resilient PWA Service Worker Engine
    ================================================================== */
 
-const CACHE_NAME = 'xqd716-nexus-v6.0.6';
+const CACHE_NAME = 'x00716-nexus-enterprise-v6.0.8';
 
 const STATIC_ASSETS = [
     './',
@@ -15,27 +15,27 @@ const STATIC_ASSETS = [
     'manifest.webmanifest'
 ];
 
-// Install Event: Pre-cache Static App Shell Assets
+// Pre-cache Static App Shell Assets
 self.addEventListener('install', event => {
     self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
-            console.log('[SW] Pre-caching static app shell assets');
+            console.log('[SW] Pre-caching static app shell architecture');
             return cache.addAll(STATIC_ASSETS);
         }).catch(err => {
-            console.warn('[SW] Cache addAll warning (handled silently):', err);
+            console.warn('[SW] Pre-cache boundary caught silently:', err);
         })
     );
 });
 
-// Activate Event: Purge Deprecated Cache Storage and Claim Control
+// Purge Deprecated Cache Storages & Claim Clients
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(keys => {
             return Promise.all(
                 keys.map(key => {
                     if (key !== CACHE_NAME) {
-                        console.log('[SW] Purging deprecated cache storage:', key);
+                        console.log('[SW] Purging deprecated storage instance:', key);
                         return caches.delete(key);
                     }
                 })
@@ -44,11 +44,11 @@ self.addEventListener('activate', event => {
     );
 });
 
-// Fetch Event: Bypass Cloud APIs, Stale-while-revalidate for local static assets
+// Intercept Network Requests: Stale-While-Revalidate with Cloud API Exclusions
 self.addEventListener('fetch', event => {
     const requestUrl = new URL(event.request.url);
 
-    // Bypass caching completely for Firebase Cloud Firestore, Auth, Analytics, and external APIs
+    // Bypass caching for Firestore, Firebase Auth, Google APIs, and Non-GET requests
     if (
         requestUrl.hostname.includes('firebase') ||
         requestUrl.hostname.includes('firestore') ||
@@ -61,28 +61,27 @@ self.addEventListener('fetch', event => {
 
     event.respondWith(
         caches.match(event.request).then(cachedResponse => {
-            const fetchPromise = fetch(event.request)
+            const networkFetchPromise = fetch(event.request)
                 .then(networkResponse => {
                     if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-                        const responseToCache = networkResponse.clone();
+                        const responseClone = networkResponse.clone();
                         caches.open(CACHE_NAME).then(cache => {
-                            cache.put(event.request, responseToCache);
+                            cache.put(event.request, responseClone);
                         });
                     }
                     return networkResponse;
                 })
                 .catch(err => {
-                    console.warn('[SW] Network request offline, fallback to cache:', err);
+                    console.warn('[SW] Offline fallback engaged for:', event.request.url);
                     return cachedResponse;
                 });
 
-            // Return cached response immediately if present, otherwise wait for network
-            return cachedResponse || fetchPromise;
+            return cachedResponse || networkFetchPromise;
         })
     );
 });
 
-// Background Message Listener for Instant Update
+// Direct Execution Trigger
 self.addEventListener('message', event => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
