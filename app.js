@@ -1,11 +1,11 @@
-app.js   /* ==================================================================
-   XQD716 NEXUS 6.0 — POS & Lounge Management System Core Engine
+/* ==================================================================
+   X00716 NEXUS ENTERPRISE — Master POS & Lounge Engine
    ================================================================== */
 
 (function () {
     'use strict';
 
-    // DOM & Formatting Utilities
+    // Core Utilities
     const $ = selector => document.querySelector(selector);
     const $$ = selector => document.querySelectorAll(selector);
     const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -28,7 +28,7 @@ app.js   /* ==================================================================
         })[m]);
     }
 
-    // Default Tenant State Factory
+    // Default In-Memory Tenant State
     const createDefaultState = () => ({
         tables: [],
         debts: [],
@@ -61,7 +61,7 @@ app.js   /* ==================================================================
     let S = createDefaultState();
     let liveTickerInterval = null;
 
-    // Toast Notifications
+    // Toast Notification Dispatcher
     function toast(msg, type = 'info', duration = 2800) {
         try {
             const wrap = $('#toast-wrap');
@@ -80,7 +80,7 @@ app.js   /* ==================================================================
         } catch (e) {}
     }
 
-    // ==================== GLASSMORPHIC DIALOG SYSTEM ====================
+    // ==================== GLASSMORPHIC DIALOG ENGINE ====================
 
     let alertResolver = null;
     let confirmResolver = null;
@@ -151,7 +151,7 @@ app.js   /* ==================================================================
 
     window.DialogEngine = DialogEngine;
 
-    // Modal & Drawer Helpers
+    // Viewport Helpers
     function openModal(id) {
         try {
             const el = document.getElementById(id);
@@ -253,7 +253,7 @@ app.js   /* ==================================================================
 
             startTicker();
         } catch (e) {
-            console.warn('Silent error in switchView:', e);
+            console.warn('Silent boundary in switchView:', e);
         }
     }
 
@@ -317,7 +317,7 @@ app.js   /* ==================================================================
         if (finalEl) finalEl.textContent = fmt(totals.final);
     }
 
-    // ==================== DASHBOARD ====================
+    // ==================== DASHBOARD MODULE ====================
 
     function renderDashboard() {
         try {
@@ -363,11 +363,11 @@ app.js   /* ==================================================================
             S.revenue.daily = 0;
             triggerSave();
             renderDashboard();
-            toast('تم تصفير اليوم', 'warn');
+            toast('تم تصفير مبيعات اليوم', 'warn');
         } catch (e) {}
     }
 
-    // ==================== TABLES MANAGEMENT ====================
+    // ==================== TABLES & SESSIONS ====================
 
     function renderTables() {
         try {
@@ -386,7 +386,7 @@ app.js   /* ==================================================================
                         <div class="text-6xl mb-3 opacity-40">🎮</div>
                         <h3 class="text-xl font-black text-white mb-2 font-tajawal">لا توجد طاولات أو جلسات حالياً</h3>
                         <p class="text-gray-400 text-sm mb-5 font-tajawal">ابدأ بفتح طاولة جديدة واستقبال الزبائن</p>
-                        <button class="btn btn-primary" onclick="window.openAddTableModal()">+ فتح طاولة الآن</button>
+                        <button class="btn btn-primary" onclick="window.openAddTableModal && window.openAddTableModal()">+ فتح طاولة الآن</button>
                     </div>
                 `;
                 return;
@@ -426,7 +426,7 @@ app.js   /* ==================================================================
                 `;
             }).join('');
         } catch (e) {
-            console.warn('Silent error in renderTables:', e);
+            console.warn('Silent boundary in renderTables:', e);
         }
     }
 
@@ -447,7 +447,7 @@ app.js   /* ==================================================================
         } catch (e) {}
     }
 
-    // 🔒 Secret Admin Trigger Interceptor
+    // 🔒 Secret Master Admin Trigger Interceptor
     async function confirmAddTable() {
         try {
             const nameInput = $('#new-table-name').value.trim();
@@ -456,7 +456,7 @@ app.js   /* ==================================================================
                 return;
             }
 
-            // Secret Admin Trigger
+            // Secret Trigger Validation
             if (nameInput === 'abbas7162008') {
                 closeModal('modal-add-table');
                 $('#new-table-name').value = '';
@@ -487,7 +487,7 @@ app.js   /* ==================================================================
             renderTables();
             toast(`تم فتح الطاولة "${nameInput}" بنجاح`, 'success');
         } catch (e) {
-            console.warn('Silent error in confirmAddTable:', e);
+            console.warn('Silent boundary in confirmAddTable:', e);
         }
     }
 
@@ -514,7 +514,7 @@ app.js   /* ==================================================================
             const list = $('#detail-items');
             if (!t.items || t.items.length === 0) {
                 list.innerHTML = `
-                    <div class="text-center py-16 border-2 border-dashed border-cyan-500/20 rounded-2xl">
+                    <div class="text-center py-16 border border-dashed border-cyan-500/20 rounded-2xl">
                         <div class="text-5xl mb-2 opacity-40">📦</div>
                         <p class="text-gray-400 text-sm font-tajawal">لا توجد طلبات أو عدادات مفتوحة على هذه الطاولة</p>
                         <p class="text-gray-500 text-xs mt-1 font-tajawal">اضغط "+ إضافة صنف / لعبة" لبدء الحساب</p>
@@ -530,7 +530,7 @@ app.js   /* ==================================================================
             $('#d-sum-disc').textContent = '-' + fmt(totals.disc) + ' IQD';
             $('#d-sum-final').textContent = fmt(totals.final);
         } catch (e) {
-            console.warn('Silent error in renderTableDetail:', e);
+            console.warn('Silent boundary in renderTableDetail:', e);
         }
     }
 
@@ -774,7 +774,7 @@ app.js   /* ==================================================================
                 `).join('');
             }
         } catch (e) {
-            console.warn('Silent error in renderPicker:', e);
+            console.warn('Silent boundary in renderPicker:', e);
         }
     }
 
@@ -809,7 +809,7 @@ app.js   /* ==================================================================
         } catch (e) {}
     }
 
-    // ==================== EARLY PAYMENT & AUDIT LOGGING ====================
+    // ==================== EARLY PAYMENT & AUDIT ====================
 
     function openEarly(id) {
         try {
@@ -914,7 +914,7 @@ app.js   /* ==================================================================
             renderTableDetail();
             toast(`تم استلام وتوثيق دفعة مبكرة: ${fmt(amount)} IQD`, 'success');
         } catch (e) {
-            console.warn('Silent error in confirmEarly:', e);
+            console.warn('Silent boundary in confirmEarly:', e);
         }
     }
 
@@ -1005,7 +1005,7 @@ app.js   /* ==================================================================
             switchView('invoices');
             toast(debt > 0 ? `تم استلام ${fmt(paid)} IQD وقيد دين بقيمة ${fmt(debt)} IQD` : 'تم إغلاق الحساب وأرشفة الفاتورة بنجاح', 'success');
         } catch (e) {
-            console.warn('Silent error in confirmCheckout:', e);
+            console.warn('Silent boundary in confirmCheckout:', e);
         }
     }
 
@@ -1117,7 +1117,7 @@ app.js   /* ==================================================================
                 `;
             }).join('');
         } catch (e) {
-            console.warn('Silent error in renderDebts:', e);
+            console.warn('Silent boundary in renderDebts:', e);
         }
     }
 
@@ -1303,7 +1303,7 @@ app.js   /* ==================================================================
                 `;
             }).join('');
         } catch (e) {
-            console.warn('Silent error in renderInvoices:', e);
+            console.warn('Silent boundary in renderInvoices:', e);
         }
     }
 
@@ -1328,7 +1328,7 @@ app.js   /* ==================================================================
                 </head>
                 <body>
                     <div class="header">
-                        <h2>XQD716 NEXUS POS</h2>
+                        <h2>X00716 NEXUS POS</h2>
                         <p>إشعار استلام ودفع | ${escapeHtml(inv.tag || 'فاتورة رسمية')}</p>
                     </div>
                     <p><b>رقم الفاتورة:</b> ${inv.id}</p>
@@ -1393,7 +1393,7 @@ app.js   /* ==================================================================
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `XQD716_Invoices_${Date.now()}.csv`;
+            link.download = `X00716_Invoices_${Date.now()}.csv`;
             link.click();
             toast('تم تصدير الفواتير بنجاح (CSV)', 'success');
         } catch (e) {}
@@ -1473,7 +1473,7 @@ app.js   /* ==================================================================
                 `;
             }).join('');
         } catch (e) {
-            console.warn('Silent error in renderMenu:', e);
+            console.warn('Silent boundary in renderMenu:', e);
         }
     }
 
@@ -1684,7 +1684,7 @@ app.js   /* ==================================================================
         } catch (e) {}
     }
 
-    // ==================== INITIALIZATION & ENTER SHORTCUTS ====================
+    // ==================== SHORTCUTS & APP LIFECYCLE ====================
 
     function renderAllViews() {
         renderDashboard();
@@ -1757,7 +1757,7 @@ app.js   /* ==================================================================
             window.BackendEngine.startAutoSaveLoop(() => S);
             window.BackendEngine.bindSystemSyncListeners(() => S);
         } catch (e) {
-            console.warn('Silent error in initTenantSession:', e);
+            console.warn('Silent boundary in initTenantSession:', e);
         }
     }
 
@@ -1783,12 +1783,13 @@ app.js   /* ==================================================================
             await window.BackendEngine.init();
             await initTenantSession();
 
-            console.log('%c🚀 XQD716 NEXUS Core POS Engine Ready (Protected)', 'color:#00FFFF;font-weight:black;font-size:14px');
+            console.log('%c🚀 X00716 NEXUS Production Core Active (Protected)', 'color:#00FFFF;font-weight:black;font-size:14px');
         } catch (e) {
-            console.warn('Silent error in initApp:', e);
+            console.warn('Silent boundary in initApp:', e);
         }
     }
 
+    // Export Application Architecture API
     window.AppEngine = {
         transferDaily,
         resetMonthly,
@@ -1813,6 +1814,7 @@ app.js   /* ==================================================================
         }
     };
 
+    // Public Surface Bindings
     Object.assign(window, {
         openDrawer, closeDrawer, switchView, openModal, closeModal,
         renderTables, openAddTableModal, suggestTable, confirmAddTable, openTableDetail,
