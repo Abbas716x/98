@@ -1,5 +1,5 @@
 /* ==================================================================
-   XQD716 NEXUS 6.0 — High-Performance 3D Space Canvas Engine
+   X00716 NEXUS ENTERPRISE — High-Performance 3D Space Canvas Engine
    ================================================================== */
 
 (function () {
@@ -12,103 +12,104 @@
     let width = 0;
     let height = 0;
 
-    // Visual Palette & Performance Tuning
-    const COLORS = ['#00FFFF', '#C026D3', '#00FF88', '#FF0080', '#FFD700'];
+    // Optical Spectrum & Density Matrix
+    const SPECTRUM = ['#00FFFF', '#C026D3', '#00FF88', '#FF0080', '#FFD700'];
     const IS_MOBILE = window.innerWidth < 768;
-    const STAR_COUNT = IS_MOBILE ? 80 : 175;
-    const PARTICLE_COUNT = IS_MOBILE ? 28 : 60;
-    const CONNECTION_DIST = IS_MOBILE ? 90 : 140;
+    const STAR_COUNT = IS_MOBILE ? 85 : 190;
+    const DUST_COUNT = IS_MOBILE ? 25 : 55;
+    const CONNECTION_LIMIT = IS_MOBILE ? 90 : 140;
 
     let stars = [];
-    let particles = [];
+    let dustParticles = [];
     let meteors = [];
     let shockwaves = [];
 
-    // Ambient Nebula Flash (Subtle Distant Cosmic Pulse)
-    let ambientFlash = {
+    // Ambient Electromagnetic Flash (Subtle Nebula Lightning)
+    const nebulaFlash = {
         alpha: 0,
         targetAlpha: 0,
         color: '#00FFFF',
-        nextTrigger: Date.now() + 5000
+        nextTrigger: Date.now() + 6000
     };
 
-    // Parallax Tilt & Mouse Coordinates
-    const mouse = { x: -9999, y: -9999, active: false, radius: 150 };
+    // Parallax Tilt & Dynamics
+    const mouse = { x: -9999, y: -9999, active: false, radius: 160 };
     const tilt = { targetX: 0, targetY: 0, currentX: 0, currentY: 0 };
 
     function resize() {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
         initStars();
-        initParticles();
+        initDust();
     }
 
-    // 1. Deep 3D Space Stars Simulation
+    // 1. Deep 3D Celestial Stars
     function initStars() {
         stars = [];
         for (let i = 0; i < STAR_COUNT; i++) {
             stars.push({
                 x: (Math.random() - 0.5) * width * 2,
                 y: (Math.random() - 0.5) * height * 2,
-                z: Math.random() * 1000 + 100,
-                size: Math.random() * 1.5 + 0.5,
+                z: Math.random() * 1000 + 50,
+                baseZ: Math.random() * 1000 + 50,
+                size: Math.random() * 1.5 + 0.6,
                 twinkle: Math.random() * Math.PI * 2,
-                twinkleSpeed: Math.random() * 0.02 + 0.005,
-                color: Math.random() > 0.4 ? '#ffffff' : (Math.random() > 0.5 ? '#00FFFF' : '#C026D3')
+                twinkleSpeed: Math.random() * 0.025 + 0.008,
+                color: Math.random() > 0.35 ? '#ffffff' : (Math.random() > 0.5 ? '#00FFFF' : '#C026D3')
             });
         }
     }
 
-    // 2. Foreground Neon Network Particles
-    function initParticles() {
-        particles = [];
-        for (let i = 0; i < PARTICLE_COUNT; i++) {
+    // 2. Interactive Foreground Neon Dust Network
+    function initDust() {
+        dustParticles = [];
+        for (let i = 0; i < DUST_COUNT; i++) {
             const depth = Math.random() * 0.8 + 0.3;
-            particles.push({
+            dustParticles.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
                 z: depth,
-                vx: (Math.random() - 0.5) * 0.38 * depth,
-                vy: (Math.random() - 0.5) * 0.38 * depth,
+                vx: (Math.random() - 0.5) * 0.35 * depth,
+                vy: (Math.random() - 0.5) * 0.35 * depth,
                 radius: (Math.random() * 2 + 1) * depth,
-                color: COLORS[Math.floor(Math.random() * COLORS.length)],
+                color: SPECTRUM[Math.floor(Math.random() * SPECTRUM.length)],
                 pulse: Math.random() * Math.PI * 2,
                 pulseSpeed: Math.random() * 0.03 + 0.015
             });
         }
     }
 
-    // 3. Rare Passing Meteors
+    // 3. Cosmic Meteor Trajectories
     function spawnMeteor() {
         if (meteors.length >= 2) return;
         const startX = Math.random() * width * 1.2;
         const startY = -40;
-        const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.25;
-        const speed = Math.random() * 12 + 10;
+        const angle = Math.PI / 4 + (Math.random() - 0.5) * 0.22;
+        const speed = Math.random() * 11 + 10;
 
         meteors.push({
             x: startX,
             y: startY,
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,
-            length: Math.random() * 85 + 65,
+            length: Math.random() * 90 + 70,
             alpha: 1.0,
             color: Math.random() > 0.5 ? '#00FFFF' : '#FF0080'
         });
     }
 
-    // 4. Click Shockwave Waves
+    // 4. Kinetic Shockwave Impulse
     function triggerShockwave(x, y) {
         shockwaves.push({
             x, y,
-            radius: 5,
+            radius: 6,
             maxRadius: IS_MOBILE ? 150 : 230,
             alpha: 0.9,
             speed: 7,
-            color: COLORS[Math.floor(Math.random() * COLORS.length)]
+            color: SPECTRUM[Math.floor(Math.random() * SPECTRUM.length)]
         });
 
-        particles.forEach(p => {
+        dustParticles.forEach(p => {
             const dx = p.x - x;
             const dy = p.y - y;
             const dist = Math.hypot(dx, dy);
@@ -122,9 +123,9 @@
 
     let lastTime = 0;
     const FRAME_RATE_LIMIT = 1000 / 60;
-    let nextMeteorTime = Date.now() + Math.random() * 6000 + 4000;
+    let nextMeteorTime = Date.now() + Math.random() * 7000 + 4000;
 
-    // Simulation Render Loop
+    // 60 FPS Render Loop Pipeline
     function render(currentTime) {
         requestAnimationFrame(render);
 
@@ -138,47 +139,47 @@
         tilt.currentX += (tilt.targetX - tilt.currentX) * 0.05;
         tilt.currentY += (tilt.targetY - tilt.currentY) * 0.05;
 
-        // A. Subtle Distant Cosmic Nebula Flash
-        if (Date.now() > ambientFlash.nextTrigger) {
-            ambientFlash.targetAlpha = 0.04;
-            ambientFlash.color = Math.random() > 0.5 ? '#00FFFF' : '#C026D3';
-            ambientFlash.nextTrigger = Date.now() + Math.random() * 11000 + 7000;
+        // A. Subtle Distant Cosmic Lightning / Nebula Flash
+        if (Date.now() > nebulaFlash.nextTrigger) {
+            nebulaFlash.targetAlpha = 0.038;
+            nebulaFlash.color = Math.random() > 0.5 ? '#00FFFF' : '#C026D3';
+            nebulaFlash.nextTrigger = Date.now() + Math.random() * 12000 + 8000;
         }
-        ambientFlash.alpha += (ambientFlash.targetAlpha - ambientFlash.alpha) * 0.08;
-        if (ambientFlash.targetAlpha > 0 && ambientFlash.alpha >= 0.035) {
-            ambientFlash.targetAlpha = 0;
+        nebulaFlash.alpha += (nebulaFlash.targetAlpha - nebulaFlash.alpha) * 0.08;
+        if (nebulaFlash.targetAlpha > 0 && nebulaFlash.alpha >= 0.035) {
+            nebulaFlash.targetAlpha = 0;
         }
 
-        if (ambientFlash.alpha > 0.005) {
-            ctx.fillStyle = ambientFlash.color;
-            ctx.globalAlpha = ambientFlash.alpha;
+        if (nebulaFlash.alpha > 0.005) {
+            ctx.fillStyle = nebulaFlash.color;
+            ctx.globalAlpha = nebulaFlash.alpha;
             ctx.fillRect(0, 0, width, height);
             ctx.globalAlpha = 1.0;
         }
 
-        // B. 3D Stars Floating in Depth
+        // B. Deep 3D Stars Floating In Spatial Z-Depth
         const cx = width / 2;
         const cy = height / 2;
 
         stars.forEach(star => {
-            star.z -= 0.55;
+            star.z -= 0.65;
             if (star.z <= 10) {
                 star.z = 1000;
                 star.x = (Math.random() - 0.5) * width * 2;
                 star.y = (Math.random() - 0.5) * height * 2;
             }
 
-            const k = 400 / star.z;
-            const px = star.x * k + cx + tilt.currentX * 1.5;
-            const py = star.y * k + cy + tilt.currentY * 1.5;
+            const k = 420 / star.z;
+            const px = star.x * k + cx + tilt.currentX * 1.6;
+            const py = star.y * k + cy + tilt.currentY * 1.6;
 
             if (px >= 0 && px <= width && py >= 0 && py <= height) {
                 star.twinkle += star.twinkleSpeed;
-                const brightness = Math.max(0.18, Math.min(1.0, (1 - star.z / 1000) * (0.7 + Math.sin(star.twinkle) * 0.3)));
+                const brightness = Math.max(0.2, Math.min(1.0, (1 - star.z / 1000) * (0.65 + Math.sin(star.twinkle) * 0.35)));
                 ctx.fillStyle = star.color;
                 ctx.globalAlpha = brightness;
                 ctx.beginPath();
-                ctx.arc(px, py, Math.max(0.6, star.size * k * 0.75), 0, Math.PI * 2);
+                ctx.arc(px, py, Math.max(0.65, star.size * k * 0.75), 0, Math.PI * 2);
                 ctx.fill();
             }
         });
@@ -210,7 +211,7 @@
             grad.addColorStop(1, 'transparent');
 
             ctx.save();
-            ctx.globalAlpha = m.alpha * 0.7;
+            ctx.globalAlpha = m.alpha * 0.75;
             ctx.strokeStyle = grad;
             ctx.lineWidth = 1.8;
             ctx.beginPath();
@@ -220,17 +221,17 @@
             ctx.restore();
         }
 
-        // D. Constellation Connections
-        for (let i = 0; i < particles.length; i++) {
-            const p1 = particles[i];
-            for (let j = i + 1; j < particles.length; j++) {
-                const p2 = particles[j];
+        // D. Constellation Interlinkage
+        for (let i = 0; i < dustParticles.length; i++) {
+            const p1 = dustParticles[i];
+            for (let j = i + 1; j < dustParticles.length; j++) {
+                const p2 = dustParticles[j];
                 const dx = p1.x - p2.x;
                 const dy = p1.y - p2.y;
                 const dist = Math.hypot(dx, dy);
 
-                if (dist < CONNECTION_DIST) {
-                    const alpha = (1 - dist / CONNECTION_DIST) * 0.3 * Math.min(p1.z, p2.z);
+                if (dist < CONNECTION_LIMIT) {
+                    const alpha = (1 - dist / CONNECTION_LIMIT) * 0.28 * Math.min(p1.z, p2.z);
                     ctx.strokeStyle = `rgba(0, 255, 255, ${alpha})`;
                     ctx.lineWidth = 0.75 * Math.min(p1.z, p2.z);
                     ctx.beginPath();
@@ -241,8 +242,8 @@
             }
         }
 
-        // E. Particles Dynamics & Repulsion
-        particles.forEach(p => {
+        // E. Dust Dynamics & Cursor Repulsion
+        dustParticles.forEach(p => {
             p.pulse += p.pulseSpeed;
 
             if (mouse.active) {
@@ -282,7 +283,7 @@
             ctx.globalAlpha = 1.0;
         });
 
-        // F. Interactive Shockwaves
+        // F. Expanding Impulse Shockwaves
         for (let i = shockwaves.length - 1; i >= 0; i--) {
             const sw = shockwaves[i];
             sw.radius += sw.speed;
@@ -306,7 +307,7 @@
         }
     }
 
-    // Window Listeners
+    // Input Listeners Pipeline
     window.addEventListener('resize', resize);
 
     window.addEventListener('mousemove', e => {
@@ -353,6 +354,7 @@
         tilt.targetY = 0;
     });
 
+    // Boot 3D Engine
     resize();
     requestAnimationFrame(render);
 })();
