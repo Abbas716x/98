@@ -5,6 +5,7 @@
 (function () {
     'use strict';
 
+    // Production Firebase Credentials Matrix
     const firebaseConfig = {
         apiKey: "AIzaSyAK2yXStkDdOLHpsjhbk10HfVj3O2wvMvE",
         authDomain: "xc-f6b4d.firebaseapp.com",
@@ -20,6 +21,7 @@
     let fbAuth = null;
     let fbReady = false;
 
+    // Multi-Tenant Cloud Schema
     const COLL_BRANCHES = 'nexus_branches';
     const COLL_TENANT_DATA = 'nexus_tenants_data';
     const COLL_AUDIT_LOGS = 'nexus_audit_logs';
@@ -38,7 +40,7 @@
     let lastLocalWriteTs = 0;
     let onCloudUpdateCallback = null;
 
-    // Seeded Fallback Tenants
+    // Seeded Fallback Tenants for Standalone Operation
     const DEFAULT_BRANCHES = [
         { id: 'branch_zayouni', name: 'زیوني', username: 'zayouni', password: '716', status: 'active', createdAt: new Date().toISOString() },
         { id: 'branch_mohammed', name: 'محمد', username: 'mohammed', password: '716', status: 'active', createdAt: new Date().toISOString() }
@@ -56,7 +58,7 @@
         } catch (e) {}
     }
 
-    // Firebase Initialization with Seamless Mock Fallback
+    // Firebase Initialization with Transparent Mock Fallback
     try {
         if (typeof firebase !== 'undefined' && firebase.initializeApp) {
             fbApp = firebase.initializeApp(firebaseConfig);
@@ -72,7 +74,6 @@
     } catch (err) {
         console.warn('⚠️ Cloud engine fallback initialized:', err.message);
         fbReady = false;
-        // Mock fallback guarantees operational UI status
         setFbStatus('online', 'ONLINE');
     }
 
@@ -407,10 +408,10 @@
         });
 
         window.addEventListener('online', () => {
-            setFbStatus('online', 'ONLINE');
+            setFbStatus('sync', 'ONLINE_SYNC');
             if (currentTenant) forceSaveCloud(stateGetter(), 'reconnected');
         });
-        window.addEventListener('offline', () => setFbStatus('online', 'ONLINE'));
+        window.addEventListener('offline', () => setFbStatus('offline', 'OFFLINE'));
     }
 
     // Branch Administration CRUD
