@@ -1,5 +1,5 @@
 /* ==================================================================
-   XQD716 NEXUS 6.0 — Enterprise Security & Kill-Switch Enforcer
+   X00716 NEXUS ENTERPRISE — Security & Self-Destruction Enforcer
    ================================================================== */
 
 (function () {
@@ -12,31 +12,58 @@
     let breachActive = false;
     let killSwitchActive = false;
 
+    // Execute Immediate Client-Side Data Sanitization & Self-Destruction
+    function executeSelfDestruction(reason) {
+        try {
+            console.error('🚨 SELF-DESTRUCTION ENGAGED:', reason);
+
+            // 1. Purge sensitive active local sessions to prevent data theft
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith('qx716_') || key.includes('nexus') || key.includes('branch'))) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+            sessionStorage.clear();
+
+            // 2. Terminate active modals and menus
+            document.querySelectorAll('.modal-bd').forEach(m => m.style.display = 'none');
+            const drawer = document.getElementById('drawer');
+            if (drawer) drawer.classList.remove('open');
+
+            // 3. Display security breach interface
+            if (overlay) {
+                overlay.classList.remove('hidden');
+            }
+
+            // 4. Dispatch cloud security incident log
+            if (window.BackendEngine && typeof window.BackendEngine.logAuditEvent === 'function') {
+                window.BackendEngine.logAuditEvent('SELF_DESTRUCT_TRIGGERED', `خرق أمني أدى للتدمير الذاتي: ${reason}`);
+            }
+        } catch (e) {
+            console.warn('Silent boundary in self-destruction routine:', e);
+        }
+    }
+
     // Trigger Screen Blur & Security Overlay
     function triggerBreach(reason) {
         if (breachActive || killSwitchActive) return;
         breachActive = true;
-        console.warn('🚨 SECURITY BREACH DETECTED:', reason);
-
-        try {
-            if (overlay) {
-                overlay.classList.remove('hidden');
-            }
-            if (window.BackendEngine && typeof window.BackendEngine.logAuditEvent === 'function') {
-                window.BackendEngine.logAuditEvent('SECURITY_BREACH_DETECTED', `محاولة فحص أمني: ${reason}`);
-            }
-        } catch (e) {}
+        executeSelfDestruction(reason);
     }
 
-    // Dismiss Security Overlay
+    // Dismiss Security Overlay & Re-authenticate
     function dismissWarning() {
         if (overlay) {
             overlay.classList.add('hidden');
         }
         breachActive = false;
+        window.location.reload();
     }
 
-    // 🔒 Remote Kill-Switch Enforcer (Freezes App Instantly)
+    // 🔒 Remote Kill-Switch Enforcer
     function triggerKillSwitchUI(reasonText) {
         killSwitchActive = true;
         try {
@@ -46,7 +73,6 @@
             if (killswitchOverlay) {
                 killswitchOverlay.classList.remove('hidden');
             }
-            // Close all active open modals
             document.querySelectorAll('.modal-bd').forEach(m => m.style.display = 'none');
             const drawer = document.getElementById('drawer');
             if (drawer) drawer.classList.remove('open');
@@ -70,7 +96,7 @@
         if (keyCode === 123 || key === 'F12') {
             e.preventDefault();
             e.stopPropagation();
-            triggerBreach('F12 DevTools Attempt');
+            triggerBreach('F12 DevTools Key Pressed');
             return false;
         }
 
@@ -78,7 +104,7 @@
         if (isCtrlOrCmd && e.shiftKey && (key === 'I' || key === 'J' || key === 'C' || keyCode === 73 || keyCode === 74 || keyCode === 67)) {
             e.preventDefault();
             e.stopPropagation();
-            triggerBreach('Ctrl+Shift+I/J/C Inspect Attempt');
+            triggerBreach('Ctrl+Shift+I/J/C DevTools Shortcut Attempt');
             return false;
         }
 
@@ -99,15 +125,15 @@
         }
     }, { capture: true });
 
-    // DevTools Dimension Expansion Check
+    // DevTools Dimension Disparity Check
     function checkDevToolsDimensions() {
-        if (killSwitchActive) return;
-        const threshold = 175;
+        if (killSwitchActive || breachActive) return;
+        const threshold = 180;
         const widthDiff = window.outerWidth - window.innerWidth > threshold;
         const heightDiff = window.outerHeight - window.innerHeight > threshold;
 
         if (widthDiff || heightDiff) {
-            triggerBreach('DevTools Dimension Expansion');
+            triggerBreach('DevTools Window Dimension Shift');
         }
     }
 
@@ -274,7 +300,7 @@
         }
     }
 
-    // Delete Branch Handler (With Strict Confirmation)
+    // Delete Branch Handler (With Confirmation)
     async function handleDeleteBranch(branchId, branchName) {
         if (!window.DialogEngine || !window.BackendEngine) return;
 
@@ -313,7 +339,7 @@
         })[m]);
     }
 
-    // Expose Security Engine Globally
+    // Public Security API
     window.SecurityEngine = {
         dismissWarning,
         triggerKillSwitchUI,
